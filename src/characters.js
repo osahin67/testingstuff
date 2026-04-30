@@ -152,8 +152,9 @@ export const CHARACTER_LIST = ['katana', 'nodachi', 'wakizashi', 'yari'];
 
 export const DEFAULT_SPRITES = {
   basePath: 'sprites/',
-  scale: 1.0,        // ← tune me: increase until the character fills the hitbox area
-  footRatio: 0.92,   // ← tune me: lower if there's padding at the bottom of frames
+  scale: 2.0,        // ← tune me: increase until the character fills the hitbox area
+  footRatio: 0.88,   // ← tune me: lower if there's ground-shadow padding at the bottom
+  xOffset: 0,        // ← tune me: nudge sprite left(-) / right(+) in sprite-pixels
 
   animations: {
     idle:    { file: 'idle.png',    frameCount: 6, fps: 8,  loop: true  },

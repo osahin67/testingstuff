@@ -79,21 +79,26 @@ export class SpriteAnimation {
    * @param {number} footRatio  0-1: where in the sprite the feet are (1 = bottom edge)
    * @returns {boolean} false if no image was available (caller should fall back)
    */
-  draw(ctx, feetX, feetY, scale = 1, facingRight = true, footRatio = 0.92) {
+  /**
+   * xOffset: pixels to shift the sprite horizontally BEFORE mirroring.
+   * Positive nudges the sprite toward the facing direction; useful when the
+   * character isn't perfectly centred in the sprite frame.
+   */
+  draw(ctx, feetX, feetY, scale = 1, facingRight = true, footRatio = 0.92, xOffset = 0) {
     if (!this.image || this.frameWidth === 0) return false;
 
     const dw = this.frameWidth  * scale;
     const dh = this.frameHeight * scale;
     const sx = this.frame * this.frameWidth;
 
-    // destX: center the frame on feetX
-    // destY: push the frame up so the foot row sits at feetY
-    const destX = feetX - dw / 2;
+    // Centre the frame on feetX, then apply the tunable offset.
+    const destX = feetX - dw / 2 + xOffset * scale;
     const destY = feetY - dh * footRatio;
 
     ctx.save();
     if (!facingRight) {
-      // Mirror around the character's center so the sprite faces the opponent.
+      // Mirror around feetX so the character faces the opponent.
+      // The xOffset is already baked into destX and mirrors correctly.
       ctx.translate(feetX * 2, 0);
       ctx.scale(-1, 1);
     }
@@ -124,6 +129,7 @@ export class AnimationController {
     this.anims     = anims;
     this.scale     = cfg.scale     ?? 1.0;
     this.footRatio = cfg.footRatio ?? 0.92;
+    this.xOffset   = cfg.xOffset   ?? 0;    // horizontal nudge in sprite-pixels
     this.syncCfg   = cfg.attackSync ?? {};
 
     this.hasSprites = Object.values(anims).some(a => a?.image !== null);
@@ -166,7 +172,7 @@ export class AnimationController {
     if (!this.hasSprites) return false;
     const anim = this.anims[this.state];
     if (!anim) return false;
-    return anim.draw(ctx, player.x, player.y, this.scale, player.facing > 0, this.footRatio);
+    return anim.draw(ctx, player.x, player.y, this.scale, player.facing > 0, this.footRatio, this.xOffset);
   }
 
   // Which sprite-frame range is "active" for a given attack state (for debug).

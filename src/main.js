@@ -69,6 +69,7 @@ function buildController(char, images) {
   return new AnimationController(anims, {
     scale:       cfg.scale,
     footRatio:   cfg.footRatio,
+    xOffset:     cfg.xOffset ?? 0,
     attackSync:  cfg.attackSync,
   });
 }
