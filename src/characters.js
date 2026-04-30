@@ -129,3 +129,49 @@ export const CHARACTERS = {
 };
 
 export const CHARACTER_LIST = ['katana', 'nodachi', 'wakizashi', 'yari'];
+
+// ─── Sprite configuration ────────────────────────────────────────────────────
+//
+// All four characters share one sprite set (the samurai sheets you provided).
+// Drop your five PNGs into the sprites/ folder and the game will pick them up.
+// Each character can override `sprites` with its own config later.
+//
+// attackSync maps each attack anim-state to a sprite-frame band split.
+// The numbers are SPRITE frame counts, not game frame counts:
+//   startup + active + recovery must equal the clip's total frameCount.
+//
+//   attack1 (6 frames):  0-1 startup | 2-3 ACTIVE (hitbox live) | 4-5 recovery
+//   attack2 (6 frames):  0-1 startup | 2-3 ACTIVE               | 4-5 recovery
+//
+// footRatio: 0–1, where in the frame the character's feet sit.
+//   1.0 = very bottom pixel.  Use ~0.85–0.95 if the sheet has a ground shadow.
+//
+// scale: uniform draw scale applied to every clip.
+//   Tune this until the sprite visually matches the hitbox size on screen.
+//   At 1.0 the sprite is drawn at its native pixel size.
+
+export const DEFAULT_SPRITES = {
+  basePath: 'sprites/',
+  scale: 1.0,        // ← tune me: increase until the character fills the hitbox area
+  footRatio: 0.92,   // ← tune me: lower if there's padding at the bottom of frames
+
+  animations: {
+    idle:    { file: 'idle.png',    frameCount: 6, fps: 8,  loop: true  },
+    attack1: { file: 'attack1.png', frameCount: 6, fps: 60, loop: false }, // fps ignored — combat drives frames
+    attack2: { file: 'attack2.png', frameCount: 6, fps: 60, loop: false },
+    fall:    { file: 'fall.png',    frameCount: 2, fps: 5,  loop: true  },
+    death:   { file: 'death.png',   frameCount: 8, fps: 10, loop: false },
+  },
+
+  // How many sprite frames belong to each attack phase.
+  attackSync: {
+    attack1: { startup: 2, active: 2, recovery: 2 },
+    attack2: { startup: 2, active: 2, recovery: 2 },
+  },
+};
+
+// Attach shared sprite config to every character.
+// Override per-character by replacing `sprites` with a custom object.
+for (const char of Object.values(CHARACTERS)) {
+  char.sprites = DEFAULT_SPRITES;
+}
